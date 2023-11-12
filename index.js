@@ -1,4 +1,5 @@
 const express = require("express");
+// const serverless = require("serverless-http");
 const { google } = require("googleapis");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -20,7 +21,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-const port = 3005;
+const port = 5001;
 
 app.get("/getCalendarEvents", async (req, res) => {
   const getEvents = async (dateTimeStart, dateTimeEnd) => {
@@ -85,6 +86,8 @@ app.post("/createEvent", (req, res) => {
 app.listen(port, () => {
   console.log(`Express server listening on port ${port}`);
 });
+
+// module.exports.handler = serverless(app);
 
 // const dateTimeForCalendar = () => {
 //   const date = new Date();
