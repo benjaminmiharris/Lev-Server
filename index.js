@@ -1,8 +1,9 @@
-const { google } = require("googleapis");
 const express = require("express");
-require("dotenv").config();
-
+const { google } = require("googleapis");
+const bodyParser = require("body-parser");
 const cors = require("cors");
+
+require("dotenv").config();
 
 const CREDENTIALS = JSON.parse(process.env.CREDENTIALS);
 const calendarId = process.env.CALENDAR_ID;
@@ -17,6 +18,7 @@ const auth = new google.auth.JWT({
 
 const app = express();
 app.use(cors());
+app.use(bodyParser.json());
 
 const port = 3005;
 
@@ -50,6 +52,34 @@ app.get("/getCalendarEvents", async (req, res) => {
     console.log(error);
     res.status(500).json({ error: "Internal server error" });
   }
+});
+
+app.post("/createEvent", (req, res) => {
+  const eventData = req.body;
+
+  const calendar = google.calendar({ version: "v3", auth });
+
+  calendar.events.insert(
+    {
+      auth,
+      calendarId,
+      resource: eventData,
+    },
+    function (err, event) {
+      if (err) {
+        console.error(
+          "There was an error contacting the Calendar service: " + err
+        );
+        res.status(500).send("Error creating event");
+        return;
+      }
+      console.log("Event created: %s", event.data.htmlLink);
+      res.status(200).json({
+        message: "Event created successfully",
+        eventLink: event.data.htmlLink,
+      });
+    }
+  );
 });
 
 app.listen(port, () => {
@@ -110,7 +140,7 @@ app.listen(port, () => {
 // const dateTime = dateTimeForCalendar();
 
 // const newEvent = {
-//   summary: "This is the tester server.",
+//   summary: "This is the tester server again.",
 //   description: "This is the description.",
 //   start: {
 //     dateTime: "2023-08-08T11:03:00.000Z",
@@ -138,3 +168,39 @@ app.listen(port, () => {
 // };
 
 // insertNewEvent(newEvent);
+
+// Refer to the Node.js quickstart on how to setup the environment:
+// https://developers.google.com/calendar/quickstart/node
+// Change the scope to 'https://www.googleapis.com/auth/calendar' and delete any
+// stored credentials.
+
+//USE FROM HERE to 185
+
+// const event = {
+//   summary: "Google I/O 2015",
+//   location: "900 Howard St., San Francisco, CA 94103",
+//   description: "A chance to hear more about Google's developer products.",
+//   start: {
+//     dateTime: "2015-05-28T09:00:00-07:00",
+//     timeZone: "America/Los_Angeles",
+//   },
+//   end: {
+//     dateTime: "2015-05-28T17:00:00-07:00",
+//     timeZone: "America/Los_Angeles",
+//   },
+// };
+
+// calendar.events.insert(
+//   {
+//     auth: auth,
+//     calendarId: calendarId,
+//     resource: event,
+//   },
+//   function (err, event) {
+//     if (err) {
+//       console.log("There was an error contacting the Calendar service: " + err);
+//       return;
+//     }
+//     console.log("Event created: %s", event.htmlLink);
+//   }
+// );
