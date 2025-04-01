@@ -43,7 +43,7 @@ app.get("/getCalendarEvents", async (req, res) => {
   };
 
   const start = "2022-01-01T00:00:00.000Z";
-  const end = "2025-06-25T00:00:00.000Z";
+  const end = "2030-06-25T00:00:00.000Z";
 
   try {
     const events = await getEvents(start, end);
